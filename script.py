@@ -146,7 +146,7 @@ class BuildAutomator:
             self.log(f"Error triggering Jenkins build: {e}")
             return None
 
-    def get_build_number_from_queue(self, queue_url, timeout=300):
+    def get_build_number_from_queue(self, queue_url, timeout=7200):
         """Get build number from queue URL"""
         if not queue_url:
             return None
