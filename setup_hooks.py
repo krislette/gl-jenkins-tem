@@ -97,7 +97,7 @@ def verify_csf_repository():
     """Verify we're in the correct CSF repository"""
     try:
         result = subprocess.run(['git', 'remote', 'get-url', 'origin'], 
-                              capture_output=True, text=True)
+                            capture_output=True, text=True)
         if result.returncode != 0:
             return False
             
@@ -125,19 +125,27 @@ def main():
     # Only run if --auto-build is in the original push command
     # This is set by our custom push alias
     if "--auto-build" not in sys.argv:
-        print("Push completed. Run 'python automation_script.py --build' to trigger automation.")
+        print("Push completed. Run 'python script.py --build' to trigger automation.")
         return
     
     print("Auto-build enabled! Starting Jenkins-TEM automation...")
     
-    # Change to script directory
-    script_dir = Path(__file__).parent
-    os.chdir(script_dir)
+    # Store the current directory (CSF repo) before changing directories
+    original_dir = os.getcwd()
     
-    # Run automation with build flag
+    # Path to the automation script
+    ci_cd_dir = Path("C:/Code/ci-cd-pipeline")
+    script_path = ci_cd_dir / "script.py"
+
+    # Run automation with build flag, but keep the CSF repo as working directory
     try:
-        result = subprocess.run([sys.executable, "automation_script.py", "--build"], 
-                              capture_output=False, text=True)
+        result = subprocess.run(
+            [sys.executable, str(script_path), "--build"],
+            cwd=original_dir,  # Keep CSF repo as working directory
+            capture_output=False,
+            text=True,
+        )
+
         if result.returncode == 0:
             print("Automation completed successfully!")
         else:
@@ -220,8 +228,8 @@ if __name__ == "__main__":
             print("  git push-build      # Push + trigger automation")
             print("")
             print("MANUAL TRIGGER:")
-            print("  python automation_script.py --check    # Check for new commits")
-            print("  python automation_script.py --build    # Run automation manually")
+            print("  python script.py --check    # Check for new commits")
+            print("  python script.py --build    # Run automation manually")
             print("")
             print(
                 "SAFETY: Only works in CSF repo, only 'git push-build' triggers automation."
