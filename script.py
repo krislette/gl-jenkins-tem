@@ -3,6 +3,7 @@ Jenkins-TEM Automation Script
 Automates the build process from Jenkins trigger to TEM execution
 """
 
+import os
 import requests
 import time
 import json
@@ -42,8 +43,12 @@ class BuildAutomator:
     def verify_repository(self):
         """Verify we're in the correct CSF repository"""
         try:
+            # Check the current working directory, not the script location
             result = subprocess.run(
-                ["git", "remote", "get-url", "origin"], capture_output=True, text=True
+                ["git", "remote", "get-url", "origin"],
+                capture_output=True,
+                text=True,
+                cwd=os.getcwd(),  # Explicitly use current working directory
             )
             if result.returncode != 0:
                 return False
@@ -89,15 +94,21 @@ class BuildAutomator:
     def check_for_new_commits(self):
         """Check if there are new commits to process"""
         try:
-            # Get the latest commit hash
+            # Get the latest commit hash from current working directory (CSF repo)
             result = subprocess.run(
-                ["git", "rev-parse", "origin/master"], capture_output=True, text=True
+                ["git", "rev-parse", "origin/master"],
+                capture_output=True,
+                text=True,
+                cwd=os.getcwd(),
             )
             latest_commit = result.stdout.strip()
 
             # Check if we've processed this commit already
+            # Read from the automation directory, not the CSF repo
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            commit_file = os.path.join(script_dir, ".last_processed_commit")
             try:
-                with open(".last_processed_commit", "r") as f:
+                with open(commit_file, "r") as f:
                     last_processed = f.read().strip()
             except FileNotFoundError:
                 last_processed = ""
@@ -270,7 +281,7 @@ class BuildAutomator:
             self.log(f"Error setting up Chrome driver: {e}")
             return None
 
-    def safe_click(self, driver, xpath, description, timeout=15):
+    def safe_click(self, driver, xpath, description, timeout=30):
         try:
             # Wait for busy indicator to disappear (if present)
             try:
@@ -442,7 +453,10 @@ class BuildAutomator:
     def update_processed_commit(self, commit_hash):
         """Update the last processed commit"""
         try:
-            with open(".last_processed_commit", "w") as f:
+            # Save in the same directory as the script, not in the CSF repo
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            commit_file = os.path.join(script_dir, ".last_processed_commit")
+            with open(commit_file, "w") as f:
                 f.write(commit_hash)
         except Exception as e:
             self.log(f"Warning: Could not update processed commit: {e}")
@@ -552,8 +566,8 @@ def main():
     - Click "Add new token" and copy to config.json
 
     USAGE:
-    python automation_script.py --check     # Just check for new commits
-    python automation_script.py --build     # Full automation (Jenkins + TEM)
+    python script.py --check     # Just check for new commits
+    python script.py --build     # Full automation (Jenkins + TEM)
 
     SAFETY: The --build flag is REQUIRED for automation to prevent accidental builds.
         """
@@ -604,11 +618,11 @@ def main():
         print("This prevents accidental Jenkins builds when others use the script.")
         print("")
         print("OPTIONS:")
-        print("  python automation_script.py --check         # Check for new commits")
-        print("  python automation_script.py --build         # Run full automation")
-        print("  python automation_script.py --test-jenkins  # Test Jenkins API")
-        print("  python automation_script.py --test-tem      # Test TEM Selenium")
-        print("  python automation_script.py --help-setup    # Setup instructions")
+        print("  python script.py --check         # Check for new commits")
+        print("  python script.py --build         # Run full automation")
+        print("  python script.py --test-jenkins  # Test Jenkins API")
+        print("  python script.py --test-tem      # Test TEM Selenium")
+        print("  python script.py --help-setup    # Setup instructions")
         return
 
     try:
@@ -616,7 +630,7 @@ def main():
         automator.run_automation()
     except FileNotFoundError:
         print("config.json not found. Please create configuration file.")
-        print("Run: python automation_script.py --help-setup")
+        print("Run: python script.py --help-setup")
     except Exception as e:
         print(f"Error initializing automator: {e}")
 
