@@ -259,26 +259,21 @@ class BuildAutomator:
             return False
 
     def setup_selenium_driver(self):
-        """Setup Chrome driver with appropriate options"""
         try:
             options = webdriver.ChromeOptions()
-            options.add_argument("--headless")
+            options.add_argument("--headless=new")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
-            options.add_argument("--disable-extensions")
-            options.add_argument("--disable-web-security")
-            options.add_argument("--allow-running-insecure-content")
-            options.add_argument("--disable-features=VizDisplayCompositor")
+            options.add_argument("--window-size=1920,1080")
 
             driver = webdriver.Chrome(options=options)
-            driver.execute_script(
-                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-            )
-
             return driver
         except Exception as e:
-            self.log(f"Error setting up Chrome driver: {e}")
+            self.log(f"Error setting up Chrome driver: {str(e)}")
+            import traceback
+
+            self.log(f"Driver setup traceback: {traceback.format_exc()}")
             return None
 
     def safe_click(self, driver, xpath, description, timeout=30):
