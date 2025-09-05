@@ -139,7 +139,11 @@ From your CSF integration testscripts repository:
    git add .
    git commit -m "Your commit message"
    ```
-3. **Push with automation**: 
+3. **Pull with rebase**:
+   ```bash
+   git pull --rebase
+   ```
+4. **Push with automation**: 
    ```bash
    git push-build
    ```
