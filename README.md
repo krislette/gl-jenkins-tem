@@ -317,7 +317,7 @@ When everything works correctly, you should see a series of logs confirming:
 - TEM automation started and finished
 - Email notification from TEM received after execution
 
-> A full sample run is available at [/docs](https://github.com/krislette/gl-jenkins-tem/docs/) directory
+> A full sample run is available at [/docs](https://github.com/krislette/gl-jenkins-tem/tree/main/docs) directory
 
 ## Get Help
 
