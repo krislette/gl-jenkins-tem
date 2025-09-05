@@ -213,6 +213,7 @@ python C:\Code\ci-cd-pipeline\script.py --help-setup
 
 ```
 C:\Code\ci-cd-pipeline\
+├── docs                        # Directory containing sample run logs
 ├── script.py                   # Main automation script
 ├── setup_hooks.py              # Git hooks setup utility  
 ├── config.json                 # Your configuration file
@@ -325,7 +326,7 @@ When everything works correctly, you should see a series of logs confirming:
 
 If you encounter issues:
 
-1. **Check this troubleshoot section** for common solutions
+1. **Check [this troubleshoot section](#troubleshoot)** for common solutions
 2. **Run individual tests** to isolate the problem
 3. **Verify configuration** matches the examples above
 4. **Test manual access** to Jenkins and TEM platforms
