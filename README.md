@@ -285,7 +285,6 @@ Verify your `config.json` settings:
 1. **Jenkins URL**: Should end with job name and trailing slash
    - Good: `https://jenkins.company.com/job/my-job/`
    - Bad: `https://jenkins.company.com/job/my-job`
-
 2. **API Token**: Generate new token if authentication fails
 3. **Test Plan Name**: Must match exactly as shown in TEM
 4. **Email**: Use a valid email (e.g. ends with @email.com/@gmail.com/@infor.com)
