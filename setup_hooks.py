@@ -221,7 +221,7 @@ if __name__ == "__main__":
         if not self.git_dir:
             self.log("error", "Not in the CSF integration testscripts repository!")
             self.log(
-                "warning", "Please run this script from within the CSF repo directory."
+                "info", "Please run this script from within the CSF repo directory."
             )
             return False
 
@@ -245,17 +245,27 @@ if __name__ == "__main__":
                 "This automation is now configured for the CSF integration testscripts repository only.",
             )
             print("")
-            self.log("info", "USAGE:")
+            self.log("info", "USAGE (Recommended):")
             self.log("info", "  git push-only       # Normal push (no automation)")
             self.log("info", "  git push-build      # Push + trigger automation")
             print("")
-            self.log("info", "MANUAL TRIGGER:")
+            self.log("info", "MANUAL TRIGGER (Not Recommended):")
             self.log("info", "  python script.py --check    # Check for new commits")
             self.log("info", "  python script.py --build    # Run automation manually")
             print("")
+            self.log("info", "SAFETY:")
             self.log(
                 "info",
-                "SAFETY: Only works in CSF repo, only 'git push-build' triggers automation.",
+                "  Only works in CSF repo, only 'git push-build' triggers automation.",
+            )
+            print("")
+            self.log(
+                "info",
+                "For complete information, setup details, usage, warnings, and common issues:",
+            )
+            self.log(
+                "info",
+                "See the README on the repository.",
             )
 
         return alias_success
@@ -295,7 +305,7 @@ def main():
         elif sys.argv[1] == "--help":
             setup.log("info", "Git Hook Setup for Jenkins-TEM Automation")
             print("")
-            setup.log("info", "USAGE:")
+            setup.log("info", "USAGE (Recommended):")
             setup.log(
                 "info", "  python setup_hooks.py           # Set up hooks and aliases"
             )
