@@ -1,6 +1,6 @@
 {
   "jenkins": {
-    "base_url": "<https://your-jenkins-server.com/job/your-job-name/>",
+    "base_url": "<http://0.0.0.0/job/your-job-name/>",
     "username": "<your-jenkins-username>",
     "api_token": "<your-jenkins-api-token-here>",
     "soho_version": "11.0"
