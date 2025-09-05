@@ -76,6 +76,7 @@ class BuildAutomator:
         """Log few reminders from time to time"""
         self.log("Please don't close this terminal while waiting.")
         self.log("Stay connected to the VPN to avoid failures.")
+        print("")
 
     def test_jenkins_trigger(self):
         """Test Jenkins API trigger"""
