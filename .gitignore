@@ -1,3 +1,6 @@
 # Conf
 config.json
+# Last processed commit history
 .last_processed_commit
+# Pychache
+__pycache__/
