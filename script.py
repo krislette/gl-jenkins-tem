@@ -9,6 +9,7 @@ import time
 import json
 import subprocess
 from datetime import datetime
+from misc.trivias import get_trivia
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -159,6 +160,7 @@ class BuildAutomator:
             self.log(
                 "Build is in queue... usually takes 30-60 minutes if another build is already running."
             )
+            self.log("Please don't close this terminal while waiting.")
 
             while time.time() - start_time < timeout:
                 response = requests.get(queue_api_url, auth=self.jenkins_auth)
@@ -184,6 +186,10 @@ class BuildAutomator:
                                 self.log(
                                     f"Still in queue (~{mins} min)... {why if why else 'Waiting for available executor'}"
                                 )
+                                self.log(f"DYK? {get_trivia()}")
+                                self.log(
+                                    "Please don't close this terminal while waiting."
+                                )
                                 last_reported_minute = mins
                         time.sleep(10)
                         continue
@@ -196,8 +202,8 @@ class BuildAutomator:
                     )
                     self.log(
                         "Please wait ~30 minutes to 2 hours for Jenkins build completion. "
-                        "Do not close this terminal while waiting."
                     )
+                    self.log("Please don't close this terminal while waiting.")
                     return build_number
 
             self.log("Timeout waiting for build to start")
@@ -278,6 +284,8 @@ class BuildAutomator:
                             self.log(
                                 f"Build #{build_number} still running... ({duration//60}m {duration%60}s elapsed)"
                             )
+                            self.log(f"DYK? {get_trivia()}")
+                            self.log("Please don't close this terminal while waiting.")
                             last_poll_time = time.time()
 
                         time.sleep(current_interval)
@@ -492,6 +500,7 @@ class BuildAutomator:
 
     def run_automation(self):
         """Run the complete automation process"""
+        self.log("Please don't close this terminal while waiting.")
         self.log("Starting automation process...")
 
         # Check for new commits
