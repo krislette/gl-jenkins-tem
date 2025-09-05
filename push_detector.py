@@ -37,16 +37,19 @@ def main():
     
     # Verify we're in the correct repository
     if not verify_csf_repository():
-        print("ERROR: This automation only works with the CSF integration testscripts repository")
+        print("[ERROR] This automation only works with the CSF integration testscripts repository")
         return
     
     # Only run if --auto-build is in the original push command
     # This is set by our custom push alias
     if "--auto-build" not in sys.argv:
-        print("Push completed. Run 'python script.py --build' to trigger automation.")
+        print("")
+        print("[INFO] Push completed. Run 'python script.py --build' to trigger automation.")
         return
     
-    print("Auto-build enabled! Starting Jenkins-TEM automation...")
+    print("")
+    print("[SUCCESS] Your code has been shipped to csf-integration-testscripts")
+    print("[SUCCESS] Auto-build enabled! Starting Jenkins-TEM automation...")
     
     # Store the current directory (CSF repo) before changing directories
     original_dir = os.getcwd()
@@ -65,11 +68,11 @@ def main():
         )
 
         if result.returncode == 0:
-            print("Automation completed successfully!")
+            print("[SUCCESS] Automation completed successfully!]")
         else:
-            print("Automation failed. Check output above.")
+            print("[FAILED] Automation failed. Check output above.")
     except Exception as e:
-        print(f"Error running automation: {e}")
+        print(f"[ERROR] Error running automation: {e}")
 
 if __name__ == "__main__":
     main()
