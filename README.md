@@ -338,4 +338,3 @@ The automation saves significant time and reduces human error in your CI/CD pipe
 Distributed under the [MIT](https://choosealicense.com/licenses/mit/) License. See [LICENSE](LICENSE) for more information.
 
 <p align="right">[<a href="#readme-top">Back to top</a>]</p>
-
