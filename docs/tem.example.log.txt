@@ -1,0 +1,52 @@
+[10:20:45] Starting TEM automation...
+
+DevTools listening on ws://127.0.0.1:57049/devtools/browser/b09c58d9-f1b0-47dc-8151-b9e81733dd17
+[10:20:49] Navigating to TEM...
+[10:20:51] Logging in...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Login button
+[10:20:57] Waiting for login to complete...
+[10:20:58] Navigating to Executions tab...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Executions tab
+[10:20:59] Creating execution job...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Create Execution Job
+[10:20:59] Selecting script branch...
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1757038860.754282   20696 voice_transcription.cc:58] Registering VoiceTranscriptionCapability
+[11832:10024:0905/102102.010:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Script Branch dropdown
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Script Branch option
+[10:21:03] Selecting script version...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Script Version dropdown
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Script Version option
+[10:21:04] Searching for test plan...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Test Plan search icon
+Created TensorFlow Lite XNNPACK delegate for CPU.
+Attempting to use a delegate that only supports static-sized tensors with a graph that has dynamic-sized tensors (tensor#-1 is a dynamic-sized tensor).
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Test Plan search result
+[10:21:24] Handling Base URL popup...
+[11832:10024:0905/102131.477:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Base URL OK button
+[10:21:35] Filling environment details...
+[10:21:35] Selecting usage type...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Usage Type dropdown
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Usage Type option
+[10:21:36] Submitting execution job...
+[INFO] Busy indicator cleared
+[SUCCESS] Clicked Submit button
+[10:21:36] TEM execution job submitted successfully!
+[10:21:36] You will receive an email when execution completes
+[10:21:41] Automation completed successfully!
+[10:21:41] The process will continue in TEM. Check your email for completion notification.
+Automation completed successfully!
