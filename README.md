@@ -54,7 +54,7 @@ This automation pipeline makes your development workflow *efficient*:
 cd C:\Code
 
 # Clone the repo into a folder named ci-cd-pipeline
-git clone https://github.com/krislette/gl-jenkins-tem.git ci-cd-pipeline
+git clone http://code.xtend.infor.com/Infor/gl-jenkins-tem.git ci-cd-pipeline
 cd ci-cd-pipeline
 
 # Remove any pre-existing push_detector.py (it will be generated later)
