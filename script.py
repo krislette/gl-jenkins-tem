@@ -194,6 +194,10 @@ class BuildAutomator:
                     self.log(
                         f"Build started: #{build_number} (waited {queued_for//60}m {queued_for%60}s in queue)"
                     )
+                    self.log(
+                        "Please wait ~30 minutes to 2 hours for Jenkins build completion. "
+                        "Do not close this terminal while waiting."
+                    )
                     return build_number
 
             self.log("Timeout waiting for build to start")
