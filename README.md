@@ -91,21 +91,24 @@ cp config.example.json config.json
 code .
 ```
 
-A `config.json` file will be generated. Update it with your details (either via VS Code or any code editor of your choice):
+A `config.json` file will be generated. Update it with your details (either via VS Code or any code editor of your choice).
+
+- Replace only the values inside `< >` (angle brackets) with your actual information.
+- Keep the ones without `< >` (like "soho_version": "11.0" or "environment_email": "test@email.com") as is, unless you want/need to change them.
 
 ```json
 {
-    "jenkins": {
-        "base_url": "https://jenkins-server.com/job/job-name/",
-        "username": "your-jenkins-username",
-        "api_token": "your-jenkins-api-token-here (see step 4)",
-        "soho_version": "your-soho-version"
-    },
-    "tem": {
-        "base_url": "https://the-tem-server.com/",
-        "test_plan_name": "Your Test Plan Name",
-        "environment_email": "your-email@company.com"
-    }
+  "jenkins": {
+    "base_url": "<http://0.0.0.0/job/your-job-name/>",
+    "username": "<your-jenkins-username>",
+    "api_token": "<your-jenkins-api-token-here>",
+    "soho_version": "11.0"
+  },
+  "tem": {
+    "base_url": "<https://your-tem-link.com/>",
+    "test_plan_name": "<Your Test Plan Name.xml (case sensitive)>",
+    "environment_email": "test@email.com"
+  }
 }
 ```
 
