@@ -1,3 +1,5 @@
+<a id="readme-top"></a>
+
 # GitLab-Jenkins-TEM CI/CD Pipeline
 
 This mini project started as an idea, after *repeatedly* configuring and executing on different platforms. Now, it automates the complete CI/CD workflow from code push to test execution. That means, it removes manual steps mainly between Jenkins builds and TEM execution.
@@ -328,5 +330,12 @@ If you encounter issues:
 3. **Verify configuration** matches the examples above
 4. **Test manual access** to Jenkins and TEM platforms
 5. **Check network connectivity** and firewall settings
+6. **Last Resort**: If common fixes don’t solve the problem, reach out to me for help.
 
 The automation saves significant time and reduces human error in your CI/CD pipeline. Once set up properly, it handles the entire flow from code push to test execution automatically.
+
+## License
+Distributed under the [MIT](https://choosealicense.com/licenses/mit/) License. See [LICENSE](LICENSE) for more information.
+
+<p align="right">[<a href="#readme-top">Back to top</a>]</p>
+
