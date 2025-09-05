@@ -1,13 +1,13 @@
 {
   "jenkins": {
-    "base_url": "https://your-jenkins-server.com/job/your-job-name/",
-    "username": "your-jenkins-username",
-    "api_token": "your-jenkins-api-token-here",
-    "soho_version": "your-soho-version"
+    "base_url": "<https://your-jenkins-server.com/job/your-job-name/>",
+    "username": "<your-jenkins-username>",
+    "api_token": "<your-jenkins-api-token-here>",
+    "soho_version": "11.0"
   },
   "tem": {
-    "base_url": "https://the-tem-link.com/",
-    "test_plan_name": "Your Test Plan Name (case sensitive)",
-    "environment_email": "sample.test@email.com"
+    "base_url": "<https://your-tem-link.com/>",
+    "test_plan_name": "<Your Test Plan Name.xml (case sensitive)>",
+    "environment_email": "test@email.com"
   }
 }
