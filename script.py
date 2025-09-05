@@ -154,17 +154,47 @@ class BuildAutomator:
         try:
             queue_api_url = f"{queue_url}api/json"
             start_time = time.time()
+            last_reported_minute = -1
+
+            self.log(
+                "Build is in queue... usually takes 30-60 minutes if another build is already running."
+            )
 
             while time.time() - start_time < timeout:
                 response = requests.get(queue_api_url, auth=self.jenkins_auth)
                 if 200 <= response.status_code < 300:
                     data = response.json()
-                    if "executable" in data and data["executable"]:
-                        build_number = data["executable"]["number"]
-                        self.log(f"Build started: #{build_number}")
-                        return build_number
 
-                time.sleep(10)  # Check queue every 10 seconds
+                    # If still queued
+                    if "executable" not in data or not data["executable"]:
+                        in_queue_since = data.get("inQueueSince")
+                        why = data.get("why", "")
+                        if in_queue_since:
+                            queued_for = int(
+                                (time.time() * 1000 - in_queue_since) / 1000
+                            )
+                            mins = queued_for // 60
+
+                            # Update every 15 mins (once per interval)
+                            if (
+                                mins > 0
+                                and mins % 15 == 0
+                                and mins != last_reported_minute
+                            ):
+                                self.log(
+                                    f"Still in queue (~{mins} min)... {why if why else 'Waiting for available executor'}"
+                                )
+                                last_reported_minute = mins
+                        time.sleep(10)
+                        continue
+
+                    # If started
+                    build_number = data["executable"]["number"]
+                    queued_for = int((time.time() * 1000 - data["inQueueSince"]) / 1000)
+                    self.log(
+                        f"Build started: #{build_number} (waited {queued_for//60}m {queued_for%60}s in queue)"
+                    )
+                    return build_number
 
             self.log("Timeout waiting for build to start")
             return None
