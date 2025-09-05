@@ -224,7 +224,7 @@ C:\Code\ci-cd-pipeline\
 
 ## Troubleshoot
 
-### Common Issues and Solutions
+### Common Issues and Solutions (Recommended)
 
 **"config.json not found"**
 - Make sure `config.json` is in `C:\Code\ci-cd-pipeline\` directory
@@ -257,7 +257,9 @@ C:\Code\ci-cd-pipeline\
 - Check file/directory permissions
 - Make sure you have git write permissions in the repository
 
-### Debug Commands
+### Debug Commands (Not Recommended)
+
+**Don't try all** of these debug commands unless communicated with the creator. Proper usage is really encouraged and wrong usage could be fatal.
 
 **Test each component separately:**
 ```bash
