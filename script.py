@@ -103,10 +103,12 @@ class BuildAutomator:
             keywords = [
                 "Jenkins",
                 "TEM",
-                "build",
-                "automation",
+                "New",
+                "don't close",
+                "connected",
                 "SUCCESS",
                 "FAILED",
+                "DYK?",
                 "completed",
                 "triggered",
             ]
@@ -363,8 +365,8 @@ class BuildAutomator:
                             self.log(
                                 f"Build #{build_number} still running, ({duration//60}m {duration%60}s elapsed)"
                             )
-                            self.log(f"DYK? {get_trivia()}")
                             self.log_reminder()
+                            self.log(f"DYK? {get_trivia()}")
                             last_poll_time = time.time()
                         return False
                 else:
