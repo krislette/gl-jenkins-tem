@@ -192,8 +192,8 @@ class BuildAutomator:
                                 self.log(
                                     f"Still in queue (~{mins} min)... {why if why else 'Waiting for available executor'}"
                                 )
-                                self.log(f"DYK? {get_trivia()}")
                                 self.log_reminder()
+                                self.log(f"DYK? {get_trivia()}")
                                 last_reported_minute = mins
                         time.sleep(10)
                         continue
@@ -288,8 +288,8 @@ class BuildAutomator:
                             self.log(
                                 f"Build #{build_number} still running... ({duration//60}m {duration%60}s elapsed)"
                             )
-                            self.log(f"DYK? {get_trivia()}")
                             self.log_reminder()
+                            self.log(f"DYK? {get_trivia()}")
                             last_poll_time = time.time()
 
                         time.sleep(current_interval)
@@ -504,7 +504,6 @@ class BuildAutomator:
 
     def run_automation(self):
         """Run the complete automation process"""
-        self.log_reminder()
         self.log("Starting automation process...")
 
         # Check for new commits
