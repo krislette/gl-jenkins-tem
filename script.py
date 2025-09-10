@@ -140,13 +140,17 @@ class BuildAutomator:
     ):
         """Display message with spinner for long operations"""
         spinner_active = True
+        spinner_result = None
 
         def spinner_thread():
+            nonlocal spinner_result
             with Live(console=self.console, refresh_per_second=10) as live:
                 spinner = Spinner("simpleDots", text=message)
                 while spinner_active:
                     live.update(spinner)
                     time.sleep(0.1)
+                # Clear the spinner by updating with empty content
+                live.update("")
 
         # Start spinner in background
         spinner_t = threading.Thread(target=spinner_thread, daemon=True)
@@ -156,12 +160,20 @@ class BuildAutomator:
 
         try:
             while time.time() - start_time < duration:
-                if check_function and check_function():
-                    break
+                if check_function:
+                    result = check_function()
+                    if result:
+                        spinner_result = result
+                        break
                 time.sleep(check_interval)
         finally:
             spinner_active = False
-            time.sleep(0.2)  # Give spinner time to stop
+            # Wait for spinner to clean up
+            spinner_t.join(timeout=0.5)
+            # Force a newline for a clean separation from spinner
+            print()
+
+        return spinner_result
 
     def test_jenkins_trigger(self):
         """Test Jenkins API trigger"""
@@ -299,7 +311,13 @@ class BuildAutomator:
                 return False
 
             # Show spinner while waiting
-            self.log_with_spinner("Waiting in build queue", timeout, check_queue, 10)
+            result = self.log_with_spinner(
+                "Waiting in build queue", timeout, check_queue, 10
+            )
+
+            # Check if we got a result from the spinner
+            if result:
+                return result
 
             # Final check
             response = requests.get(queue_api_url, auth=self.jenkins_auth)
@@ -376,12 +394,18 @@ class BuildAutomator:
                     return "ERROR"
 
             # Show spinner while build is running
-            self.log_with_spinner(
+            result = self.log_with_spinner(
                 f"Build #{build_number} is running",
                 max_wait_seconds,
                 check_build,
                 900,
             )
+
+            # Check the result
+            if result is True:
+                return True
+            elif result == "FAILED" or result == "ERROR":
+                return False
 
             # Final check
             final_result = check_build()
