@@ -3,29 +3,67 @@ Git Hook Setup Script
 Sets up post-push detection for automation
 """
 
+# Regular imports
 import sys
 import platform
 import subprocess
 from pathlib import Path
 
+# Rich imports
+from rich.console import Console
+from rich.text import Text
+from rich.panel import Panel
+
 
 class HookSetup:
     def __init__(self):
+        self.console = Console()
         self.git_dir = self.find_git_directory()
         self.hooks_dir = self.git_dir / "hooks" if self.git_dir else None
         self.script_dir = Path(__file__).parent.absolute()
 
     def log(self, level, message):
         """Log with status level"""
-        levels = {
-            "success": "[SUCCESS]",
-            "error": "[ERROR]",
-            "failed": "[FAILED]",
-            "warning": "[WARNING]",
-            "info": "[INFO]",
-        }
-        tag = levels.get(level.lower(), "[INFO]")
-        print(f"{tag} {message}")
+        if level.lower() == "success":
+            message_text = Text(f"[SUCCESS] {message}", style="bold green")
+        elif level.lower() == "error":
+            message_text = Text(f"[ERROR] {message}", style="bold red")
+        elif level.lower() == "failed":
+            message_text = Text(f"[FAILED] {message}", style="bold red")
+        elif level.lower() == "warning":
+            message_text = Text(f"[WARNING] {message}", style="bold yellow")
+        else:
+            # Regular info messages - make keywords bold
+            full_text = f"[INFO] {message}"
+            message_text = Text()
+            words = full_text.split()
+
+            # Keywords to emphasize
+            keywords = [
+                "Git",
+                "Jenkins",
+                "TEM",
+                "automation",
+                "CSF",
+                "repository",
+                "SUCCESS",
+                "FAILED",
+                "SETUP",
+                "COMPLETE",
+                "hooks",
+                "aliases",
+            ]
+
+            for i, word in enumerate(words):
+                if any(keyword.lower() in word.lower() for keyword in keywords):
+                    message_text.append(word, style="bold")
+                else:
+                    message_text.append(word)
+
+                if i < len(words) - 1:
+                    message_text.append(" ")
+
+        self.console.print(message_text)
 
     def find_git_directory(self):
         """Find the .git directory and verify it's the CSF repo"""
@@ -96,18 +134,57 @@ class HookSetup:
         """Create a lightweight push detector script"""
         detector_script = self.script_dir / "push_detector.py"
 
-        script_content = f'''
-#!/usr/bin/env python3
+        script_content = f'''#!/usr/bin/env python3
 """
 Lightweight Push Detector
 Runs after successful push to check if automation should trigger
 ONLY WORKS WITH CSF INTEGRATION TESTSCRIPTS REPOSITORY
 """
 
+# Regular imports
 import subprocess
 import sys
 import os
 from pathlib import Path
+
+# Rich imports
+from rich.console import Console
+from rich.text import Text
+
+def log(message, level="INFO"):
+    """Enhanced log with colors using Rich (no timestamps for push detector)"""
+    console = Console()
+    
+    if level.upper() == "SUCCESS":
+        message_text = Text(f"[SUCCESS] {{message}}", style="bold green")
+    elif level.upper() == "ERROR":
+        message_text = Text(f"[ERROR] {{message}}", style="bold red")
+    elif level.upper() == "FAILED":
+        message_text = Text(f"[FAILED] {{message}}", style="bold red")
+    elif level.upper() == "WARNING":
+        message_text = Text(f"[WARNING] {{message}}", style="bold yellow")
+    else:
+        # Regular info messages - make keywords bold
+        full_text = f"[INFO] {{message}}"
+        message_text = Text()
+        words = full_text.split()
+        
+        # Keywords to emphasize
+        keywords = [
+            "Push", "automation", "Jenkins", "TEM", "CSF", "build", 
+            "completed", "shipped", "Auto-build", "enabled"
+        ]
+        
+        for i, word in enumerate(words):
+            if any(keyword.lower() in word.lower() for keyword in keywords):
+                message_text.append(word, style="bold")
+            else:
+                message_text.append(word)
+            
+            if i < len(words) - 1:
+                message_text.append(" ")
+    
+    console.print(message_text)
 
 def verify_csf_repository():
     """Verify we're in the correct CSF repository"""
@@ -135,19 +212,19 @@ def main():
     
     # Verify we're in the correct repository
     if not verify_csf_repository():
-        print("[ERROR] This automation only works with the CSF integration testscripts repository")
+        log("This automation only works with the CSF integration testscripts repository", "ERROR")
         return
     
     # Only run if --auto-build is in the original push command
     # This is set by our custom push alias
     if "--auto-build" not in sys.argv:
         print("")
-        print("[INFO] Push completed. Run 'python script.py --build' to trigger automation.")
+        log("Push completed. Run 'python script.py --build' to trigger automation.")
         return
     
     print("")
-    print("[SUCCESS] Your code has been shipped to csf-integration-testscripts")
-    print("[SUCCESS] Auto-build enabled! Starting Jenkins-TEM automation...")
+    log("Your code has been shipped to csf-integration-testscripts", "SUCCESS")
+    log("Auto-build enabled! Starting Jenkins-TEM automation...", "SUCCESS")
     
     # Store the current directory (CSF repo) before changing directories
     original_dir = os.getcwd()
@@ -166,11 +243,11 @@ def main():
         )
 
         if result.returncode == 0:
-            print("[SUCCESS] Automation completed successfully!]")
+            log("Automation completed successfully!", "SUCCESS")
         else:
-            print("[FAILED] Automation failed. Check output above.")
+            log("Automation failed. Check output above.", "FAILED")
     except Exception as e:
-        print(f"[ERROR] Error running automation: {{e}}")
+        log(f"Error running automation: {{e}}", "ERROR")
 
 if __name__ == "__main__":
     main()
@@ -237,36 +314,31 @@ if __name__ == "__main__":
         alias_success = self.setup_git_aliases()
 
         if alias_success:
-            print("")
             self.log("success", "SETUP COMPLETE!")
-            print("")
-            self.log(
-                "info",
-                "This automation is now configured for the CSF integration testscripts repository only.",
+            self.log("info", "Preparing information panel...")
+
+            setup_info = Panel(
+                """
+        [bold white]This automation is now configured for the CSF integration testscripts repository only.[/bold white]
+
+        [bold green]USAGE (Recommended):[/bold green]
+        git push-only       # Normal push (no automation)
+        git push-build      # Push + trigger automation
+
+        [bold yellow]MANUAL TRIGGER (Not Recommended):[/bold yellow]
+        python script.py --check    # Check for new commits
+        python script.py --build    # Run automation manually
+
+        [bold blue]SAFETY:[/bold blue]
+        Only works in CSF repo, only 'git push-build' triggers automation.
+
+        [bold white]For complete information, setup details, usage, warnings, and common issues:[/bold white]
+        See the README on the repository.
+                """,
+                title="Setup Complete",
+                border_style="green",
             )
-            print("")
-            self.log("info", "USAGE (Recommended):")
-            self.log("info", "  git push-only       # Normal push (no automation)")
-            self.log("info", "  git push-build      # Push + trigger automation")
-            print("")
-            self.log("info", "MANUAL TRIGGER (Not Recommended):")
-            self.log("info", "  python script.py --check    # Check for new commits")
-            self.log("info", "  python script.py --build    # Run automation manually")
-            print("")
-            self.log("info", "SAFETY:")
-            self.log(
-                "info",
-                "  Only works in CSF repo, only 'git push-build' triggers automation.",
-            )
-            print("")
-            self.log(
-                "info",
-                "For complete information, setup details, usage, warnings, and common issues:",
-            )
-            self.log(
-                "info",
-                "See the README on the repository.",
-            )
+            self.console.print(setup_info)
 
         return alias_success
 
@@ -303,20 +375,24 @@ def main():
             setup.remove_hooks()
             return
         elif sys.argv[1] == "--help":
-            setup.log("info", "Git Hook Setup for Jenkins-TEM Automation")
-            print("")
-            setup.log("info", "USAGE (Recommended):")
-            setup.log(
-                "info", "  python setup_hooks.py           # Set up hooks and aliases"
+            help_panel = Panel(
+                """
+        [bold green]Git Hook Setup for Jenkins-TEM Automation[/bold green]
+
+        [bold blue]USAGE (Recommended):[/bold blue]
+        python setup_hooks.py           # Set up hooks and aliases
+        python setup_hooks.py --remove  # Remove hooks and aliases
+        python setup_hooks.py --help    # Show this help
+                """,
+                title="Help",
+                border_style="blue",
             )
-            setup.log(
-                "info", "  python setup_hooks.py --remove  # Remove hooks and aliases"
-            )
-            setup.log("info", "  python setup_hooks.py --help    # Show this help")
+            setup.console.print(help_panel)
             return
 
-    setup.log("info", "Setting up Git hooks for Jenkins-TEM automation...")
-    print("")
+    setup.console.print(
+        Text("Setting up Git hooks for Jenkins-TEM automation...", style="bold blue")
+    )
 
     success = setup.setup_hooks()
 
