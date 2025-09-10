@@ -1,6 +1,6 @@
 <a id="readme-top"></a>
 
-# GitLab-Jenkins-TEM CI/CD Pipeline
+<h1 align="center">GitLab-Jenkins-TEM CI/CD Pipeline</h1>
 
 This mini project started as an idea, after *repeatedly* configuring and executing on different platforms. Now, it automates the complete CI/CD workflow from code push to test execution. That means, it removes manual steps mainly between Jenkins builds and TEM execution.
 
