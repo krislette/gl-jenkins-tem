@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Lightweight Push Detector
@@ -6,10 +5,50 @@ Runs after successful push to check if automation should trigger
 ONLY WORKS WITH CSF INTEGRATION TESTSCRIPTS REPOSITORY
 """
 
+# Regular imports
 import subprocess
 import sys
 import os
 from pathlib import Path
+
+# Rich imports
+from rich.console import Console
+from rich.text import Text
+
+def log(message, level="INFO"):
+    """Enhanced log with colors using Rich (no timestamps for push detector)"""
+    console = Console()
+    
+    if level.upper() == "SUCCESS":
+        message_text = Text(f"[SUCCESS] {message}", style="bold green")
+    elif level.upper() == "ERROR":
+        message_text = Text(f"[ERROR] {message}", style="bold red")
+    elif level.upper() == "FAILED":
+        message_text = Text(f"[FAILED] {message}", style="bold red")
+    elif level.upper() == "WARNING":
+        message_text = Text(f"[WARNING] {message}", style="bold yellow")
+    else:
+        # Regular info messages - make keywords bold
+        full_text = f"[INFO] {message}"
+        message_text = Text()
+        words = full_text.split()
+        
+        # Keywords to emphasize
+        keywords = [
+            "Push", "automation", "Jenkins", "TEM", "CSF", "build", 
+            "completed", "shipped", "Auto-build", "enabled"
+        ]
+        
+        for i, word in enumerate(words):
+            if any(keyword.lower() in word.lower() for keyword in keywords):
+                message_text.append(word, style="bold")
+            else:
+                message_text.append(word)
+            
+            if i < len(words) - 1:
+                message_text.append(" ")
+    
+    console.print(message_text)
 
 def verify_csf_repository():
     """Verify we're in the correct CSF repository"""
@@ -37,19 +76,19 @@ def main():
     
     # Verify we're in the correct repository
     if not verify_csf_repository():
-        print("[ERROR] This automation only works with the CSF integration testscripts repository")
+        log("This automation only works with the CSF integration testscripts repository", "ERROR")
         return
     
     # Only run if --auto-build is in the original push command
     # This is set by our custom push alias
     if "--auto-build" not in sys.argv:
         print("")
-        print("[INFO] Push completed. Run 'python script.py --build' to trigger automation.")
+        log("Push completed. Run 'python script.py --build' to trigger automation.")
         return
     
     print("")
-    print("[SUCCESS] Your code has been shipped to csf-integration-testscripts")
-    print("[SUCCESS] Auto-build enabled! Starting Jenkins-TEM automation...")
+    log("Your code has been shipped to csf-integration-testscripts", "SUCCESS")
+    log("Auto-build enabled! Starting Jenkins-TEM automation...", "SUCCESS")
     
     # Store the current directory (CSF repo) before changing directories
     original_dir = os.getcwd()
@@ -68,11 +107,11 @@ def main():
         )
 
         if result.returncode == 0:
-            print("[SUCCESS] Automation completed successfully!]")
+            log("Automation completed successfully!", "SUCCESS")
         else:
-            print("[FAILED] Automation failed. Check output above.")
+            log("Automation failed. Check output above.", "FAILED")
     except Exception as e:
-        print(f"[ERROR] Error running automation: {e}")
+        log(f"Error running automation: {e}", "ERROR")
 
 if __name__ == "__main__":
     main()
