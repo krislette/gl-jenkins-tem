@@ -151,6 +151,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.text import Text
 
+
 def log(message, level="INFO"):
     """Enhanced log with colors using Rich (no timestamps for push detector)"""
     console = Console()
