@@ -6,64 +6,88 @@ Compressing objects: 100% (10/10), done.
 Writing objects: 100% (11/11), 850 bytes | 283.00 KiB/s, done.
 Total 11 (delta 9), reused 0 (delta 0), pack-reused 0 (from 0)
 To <repo-link>
-Auto-build enabled! Starting Jenkins-TEM automation...
-[09:35:32] Starting automation process...
-[09:35:32] New commit detected: 595b4cca
-[09:35:32] Triggering Jenkins build...
-[09:35:32] Jenkins build triggered successfully
-[09:35:43] Build started: #3023
-[09:50:44] Build #3023 still running... (15m 0s elapsed)
-[10:05:45] Build #3023 still running... (30m 1s elapsed)
-[10:20:45] Jenkins build completed successfully
-[10:20:45] Starting TEM automation...
 
-DevTools listening on ws://127.0.0.1:57049/devtools/browser/b09c58d9-f1b0-47dc-8151-b9e81733dd17
-[10:20:49] Navigating to TEM...
-[10:20:51] Logging in...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Login button
-[10:20:57] Waiting for login to complete...
-[10:20:58] Navigating to Executions tab...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Executions tab
-[10:20:59] Creating execution job...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Create Execution Job
-[10:20:59] Selecting script branch...
-WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1757038860.754282   20696 voice_transcription.cc:58] Registering VoiceTranscriptionCapability
-[11832:10024:0905/102102.010:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Script Branch dropdown
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Script Branch option
-[10:21:03] Selecting script version...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Script Version dropdown
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Script Version option
-[10:21:04] Searching for test plan...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Test Plan search icon
+[SUCCESS] Your code has been shipped to csf-integration-testscripts
+[SUCCESS] Auto-build enabled! Starting Jenkins-TEM automation...
+[13:07:27] Starting automation process
+[13:07:27] New commit detected: 5849924acsf-integration-testscripts
+[13:07:27] Triggering Jenkins build
+[13:07:28] Jenkins build triggered successfully
+[13:07:28] Build is in queue usually takes 30-60 minutes if another build is already running.
+[13:07:28] Please don't close this terminal while waiting.
+[13:07:28] Stay connected to the VPN to avoid failures.
+[13:23:01] Still in queue (~15 min) Build #3,067 is already in progress (ETA: 11 min)
+[13:23:01] Please don't close this terminal while waiting.
+[13:23:01] Stay connected to the VPN to avoid failures.
+[13:23:02] DYK? Porcupines can float in water.
+[13:32:05] Build started: #3068 (waited 24m 5s in queue)
+[13:32:06] Please wait ~30 minutes to 2 hours for Jenkins build completion.
+[13:32:06] Please don't close this terminal while waiting.
+[13:32:06] Stay connected to the VPN to avoid failures.
+
+
+[13:47:06] Build #3068 still running, (15m 0s elapsed)
+[13:47:06] Please don't close this terminal while waiting.
+[13:47:06] Stay connected to the VPN to avoid failures.
+[13:47:07] DYK? Bullet proof vests, fire escapes, windshield wipers, and laser printers were all invented by women
+[14:02:08] Build #3068 still running, (30m 2s elapsed)
+[14:02:08] Please don't close this terminal while waiting.
+[14:02:08] Stay connected to the VPN to avoid failures.
+[14:02:09] DYK? The 57 on Heinz ketchup bottles represents the number of varieties of pickles the company once had.
+[14:17:09] Jenkins build completed successfully
+
+
+[14:17:10] Starting TEM automation
+
+DevTools listening on ws://127.0.0.1:51341/devtools/browser/e60c205c-74f8-41a4-b491-130e5f33184f
+[14:17:20] Navigating to TEM
+[14:17:23] Logging in
+[14:17:23] Busy indicator cleared
+[14:17:26] Clicked Login button
+[14:17:26] Waiting for login to complete
+[14:17:33] Navigating to Executions tab
+[14:17:34] Busy indicator cleared
+[14:17:35] Clicked Executions tab
+[14:17:35] Creating execution job
+[14:17:35] Busy indicator cleared
+[14:17:35] Clicked Create Execution Job
+[14:17:35] Selecting script branch
+[14:17:38] Busy indicator cleared
+[14:17:39] Clicked Script Branch dropdown
+[14:17:40] Busy indicator cleared
+[14:17:40] Clicked Script Branch option
+[14:17:40] Selecting script version
+[14:17:40] Busy indicator cleared
+[14:17:41] Clicked Script Version dropdown
+[25764:8708:0910/141741.374:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[14:17:42] Busy indicator cleared
+[14:17:42] Clicked Script Version option
+[14:17:42] Searching for test plan
+[14:17:43] Busy indicator cleared
+[14:17:44] Clicked Test Plan search icon
 Created TensorFlow Lite XNNPACK delegate for CPU.
-Attempting to use a delegate that only supports static-sized tensors with a graph that has dynamic-sized tensors (tensor#-1 is a dynamic-sized tensor).
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Test Plan search result
-[10:21:24] Handling Base URL popup...
-[11832:10024:0905/102131.477:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Base URL OK button
-[10:21:35] Filling environment details...
-[10:21:35] Selecting usage type...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Usage Type dropdown
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Usage Type option
-[10:21:36] Submitting execution job...
-[INFO] Busy indicator cleared
-[SUCCESS] Clicked Submit button
-[10:21:36] TEM execution job submitted successfully!
-[10:21:36] You will receive an email when execution completes
-[10:21:41] Automation completed successfully!
-[10:21:41] The process will continue in TEM. Check your email for completion notification.
-Automation completed successfully!
+[25764:8708:0910/141809.287:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[14:18:09] Busy indicator cleared
+[14:18:10] Clicked Test Plan search result
+[14:18:10] Handling Base URL popup
+[14:18:25] Busy indicator cleared
+[14:18:25] Clicked Base URL OK button
+[14:18:25] Filling environment details
+[14:18:26] Selecting usage type
+[14:18:26] Busy indicator cleared
+[14:18:26] Clicked Usage Type dropdown
+[14:18:26] Busy indicator cleared
+[14:18:26] Clicked Usage Type option
+[14:18:26] Submitting execution job
+[14:18:26] Busy indicator cleared
+[14:18:27] Clicked Submit button
+[14:18:27] Waiting for submission confirmation
+[14:18:29] Job successfully queued confirmation received
+[14:18:29] Busy indicator cleared
+[25764:8708:0910/141857.659:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[14:18:59] Timeout waiting for OK button
+[14:18:59] TEM execution job submitted successfully!
+[14:18:59] You will receive an email when execution completes
+[14:19:05] Automation completed successfully!
+[14:19:05] The process will continue in TEM. Check your email for completion notification.
+[SUCCESS] Automation completed successfully!
