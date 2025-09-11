@@ -238,9 +238,49 @@ class BuildAutomator:
 
             if 200 <= response.status_code < 300:
                 self.log("Jenkins build triggered successfully", "SUCCESS")
-                # Get queue item location from response headers
+
+                # Jenkins *may or may not* return a queue URL
                 queue_url = response.headers.get("Location")
-                return queue_url
+                if queue_url:
+                    return queue_url
+
+                # Fallback: Look for user's job on queue
+                self.log(
+                    "Warning: Jenkins did not return a queue URL. "
+                    "Checking the queue API for your build...",
+                    "WARNING",
+                )
+                try:
+                    queue_api_url = f"{self.jenkins_url}queue/api/json"
+                    queue_resp = requests.get(queue_api_url, auth=self.jenkins_auth)
+                    if queue_resp.ok:
+                        queue_data = queue_resp.json()
+                        for item in queue_data.get("items", []):
+                            task_url = item.get("task", {}).get("url", "")
+                            if self.config["jenkins"]["job_name"] in task_url:
+                                queue_url = item.get("url")
+                                self.log(f"Found queued item: {queue_url}", "SUCCESS")
+                                return queue_url
+                except Exception as e:
+                    self.log(f"Queue lookup failed: {e}", "ERROR")
+
+                # Fallback #2: Last known build
+                try:
+                    job_api_url = f"{self.jenkins_url}api/json"
+                    job_resp = requests.get(job_api_url, auth=self.jenkins_auth)
+                    if job_resp.ok:
+                        data = job_resp.json()
+                        last_build = data.get("lastBuild", {}).get("number")
+                        if last_build:
+                            self.log(
+                                f"Fallback: using last known build #{last_build} "
+                                "(may not be your run).",
+                                "WARNING",
+                            )
+                            return f"{self.jenkins_url}{last_build}/"
+                except Exception as e:
+                    self.log(f"Fallback failed to fetch last build: {e}", "ERROR")
+
             else:
                 self.log(
                     f"Failed to trigger build. Status: {response.status_code}", "ERROR"
