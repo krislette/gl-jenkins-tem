@@ -4,3 +4,5 @@ config.json
 .last_processed_commit
 # Pychache
 __pycache__/
+# Personal test file
+test.py
