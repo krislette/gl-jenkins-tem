@@ -25,7 +25,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import (
     TimeoutException,
     ElementClickInterceptedException,
@@ -95,33 +94,40 @@ class BuildAutomator:
         elif level == "WARNING":
             message_text = Text(message, style="bold yellow")
         else:
-            # Regular info messages - make keywords bold
             message_text = Text()
-            words = message.split()
 
-            # Keywords to emphasize
-            keywords = [
-                "Jenkins",
-                "TEM",
-                "New",
-                "don't",
-                "close",
-                "connected",
-                "SUCCESS",
-                "FAILED",
-                "DYK?",
-                "completed",
-                "triggered",
-            ]
+            if message.strip().startswith("DYK?"):
+                # Give trivia its own style
+                message_text.append("DYK? ", style="bold magenta")
+                message_text.append(
+                    message.replace("DYK?", "").strip(), style="magenta"
+                )
+            else:
+                # Normal INFO logging
+                words = message.split()
 
-            for i, word in enumerate(words):
-                if any(keyword.lower() in word.lower() for keyword in keywords):
-                    message_text.append(word, style="bold")
-                else:
-                    message_text.append(word)
+                # Keywords to emphasize
+                keywords = [
+                    "Jenkins",
+                    "TEM",
+                    "New",
+                    "don't",
+                    "close",
+                    "connected",
+                    "SUCCESS",
+                    "FAILED",
+                    "completed",
+                    "triggered",
+                    "queue",
+                ]
+                for i, word in enumerate(words):
+                    if any(keyword.lower() in word.lower() for keyword in keywords):
+                        message_text.append(word, style="bold")
+                    else:
+                        message_text.append(word)
 
-                if i < len(words) - 1:
-                    message_text.append(" ")
+                    if i < len(words) - 1:
+                        message_text.append(" ")
 
         # Combine timestamp and message
         full_message = Text()
@@ -228,70 +234,88 @@ class BuildAutomator:
             return None
 
     def trigger_jenkins_build(self):
-        """Trigger Jenkins build via API"""
+        """Trigger Jenkins build via curl (subprocess)"""
         try:
             self.log("Triggering Jenkins build")
-            build_url = f"{self.jenkins_url}buildWithParameters"
+
+            # Normalize Jenkins URL
+            base_url = self.jenkins_url.rstrip("/")
+            build_url = f"{base_url}/buildWithParameters"
             params = {"CSF_SOHO_VERSION": self.config["jenkins"]["soho_version"]}
 
-            response = requests.post(build_url, auth=self.jenkins_auth, params=params)
+            # Build full URL exactly like curl
+            param_string = "&".join([f"{k}={v}" for k, v in params.items()])
+            full_url = f"{build_url}?{param_string}"
 
-            if 200 <= response.status_code < 300:
-                self.log("Jenkins build triggered successfully", "SUCCESS")
+            # Trigger with curl (Note to self: This was previously requests)
+            # But the Location from header response isn't visible so this was the fix
+            username, password = self.jenkins_auth
+            curl_cmd = [
+                "curl",
+                "-s",
+                "-i",
+                "-u",
+                f"{username}:{password}",
+                "-X",
+                "POST",
+                full_url,
+            ]
+            result = subprocess.run(curl_cmd, capture_output=True, text=True)
+            headers = result.stdout.splitlines()
 
-                # Case 1: Jenkins directly gives queue URL
-                queue_url = response.headers.get("Location")
-                if queue_url:
-                    self.log(f"Direct queue URL returned: {queue_url}", "INFO")
-                    return queue_url
+            location = None
+            for line in headers:
+                if line.startswith("HTTP/"):
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        status_code = int(parts[1])
+                elif line.lower().startswith("location:"):
+                    location = line.split(":", 1)[1].strip()
 
-                # Case 2: Look for this job in the Jenkins queue API
-                self.log(
-                    "Warning: Jenkins did not return a queue URL. "
-                    "Checking the queue API for your job...",
-                    "WARNING",
-                )
-                try:
-                    queue_api_url = f"{self.jenkins_url}queue/api/json"
-                    queue_resp = requests.get(queue_api_url, auth=self.jenkins_auth)
-                    if queue_resp.ok:
-                        queue_data = queue_resp.json()
-                        for item in queue_data.get("items", []):
-                            task_url = item.get("task", {}).get("url", "")
-                            if self.config["jenkins"]["job_name"] in task_url:
-                                queue_url = item.get("url")
-                                self.log(f"Found job in queue: {queue_url}", "SUCCESS")
-                                return queue_url
-                        self.log("Job not found in queue API.", "WARNING")
-                except Exception as e:
-                    self.log(f"Queue lookup failed: {e}", "ERROR")
+            if location:
+                return location
 
-                # Case 3: Fallback, monitor next build number
-                try:
-                    job_api_url = f"{self.jenkins_url}api/json"
-                    job_resp = requests.get(job_api_url, auth=self.jenkins_auth)
-                    if job_resp.ok:
-                        data = job_resp.json()
-                        next_build = data.get("nextBuildNumber")
-                        if next_build:
-                            self.log(
-                                f"No queue info available. "
-                                f"Monitoring upcoming build #{next_build} "
-                                f"(your run may be merged with others).",
-                                "WARNING",
-                            )
-                            return f"{self.jenkins_url}{next_build}/"
-                        else:
-                            self.log("Could not determine next build number.", "ERROR")
-                except Exception as e:
-                    self.log(f"Fallback failed to fetch next build: {e}", "ERROR")
+            # Fallback 1: Queue API
+            self.log("No Location header found, trying queue API fallback", "WARNING")
+            try:
+                if "/job/" in self.jenkins_url:
+                    base_jenkins_url = self.jenkins_url.split("/job/")[0]
+                else:
+                    base_jenkins_url = base_url
 
-            else:
-                self.log(
-                    f"Failed to trigger build. Status: {response.status_code}", "ERROR"
-                )
-                self.log(f"Response: {response.text}", "ERROR")
-                return None
+                queue_api_url = f"{base_jenkins_url}/queue/api/json"
+                queue_resp = requests.get(queue_api_url, auth=self.jenkins_auth)
+                if queue_resp.ok:
+                    items = queue_resp.json().get("items", [])
+                    # Only one job in queue, assume it's ours
+                    if len(items) == 1:
+                        queue_url = items[0].get("url")
+                        self.log(
+                            f"Assuming our job is in queue: {queue_url}", "SUCCESS"
+                        )
+                        return queue_url
+                    elif items:
+                        self.log(
+                            f"Found {len(items)} jobs in queue, cannot auto-match",
+                            "WARNING",
+                        )
+            except Exception as e:
+                self.log(f"Queue API fallback failed: {e}", "ERROR")
+
+            # Fallback 2: Job API
+            try:
+                job_api_url = f"{self.jenkins_url.rstrip('/')}/api/json"
+                job_resp = requests.get(job_api_url, auth=self.jenkins_auth)
+                if job_resp.ok:
+                    data = job_resp.json()
+                    next_build = data.get("nextBuildNumber")
+                    if next_build:
+                        self.log(f"Monitoring upcoming build #{next_build}", "WARNING")
+                        return f"{self.jenkins_url.rstrip('/')}/{next_build}/"
+            except Exception as e:
+                self.log(f"Job API fallback failed: {e}", "ERROR")
+
+            return None
 
         except Exception as e:
             self.log(f"Error triggering Jenkins build: {e}", "ERROR")
