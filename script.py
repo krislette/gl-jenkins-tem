@@ -239,15 +239,16 @@ class BuildAutomator:
             if 200 <= response.status_code < 300:
                 self.log("Jenkins build triggered successfully", "SUCCESS")
 
-                # Jenkins *may or may not* return a queue URL
+                # Case 1: Jenkins directly gives queue URL
                 queue_url = response.headers.get("Location")
                 if queue_url:
+                    self.log(f"Direct queue URL returned: {queue_url}", "INFO")
                     return queue_url
 
-                # Fallback: Look for user's job on queue
+                # Case 2: Look for this job in the Jenkins queue API
                 self.log(
                     "Warning: Jenkins did not return a queue URL. "
-                    "Checking the queue API for your build...",
+                    "Checking the queue API for your job...",
                     "WARNING",
                 )
                 try:
@@ -259,27 +260,31 @@ class BuildAutomator:
                             task_url = item.get("task", {}).get("url", "")
                             if self.config["jenkins"]["job_name"] in task_url:
                                 queue_url = item.get("url")
-                                self.log(f"Found queued item: {queue_url}", "SUCCESS")
+                                self.log(f"Found job in queue: {queue_url}", "SUCCESS")
                                 return queue_url
+                        self.log("Job not found in queue API.", "WARNING")
                 except Exception as e:
                     self.log(f"Queue lookup failed: {e}", "ERROR")
 
-                # Fallback #2: Last known build
+                # Case 3: Fallback, monitor next build number
                 try:
                     job_api_url = f"{self.jenkins_url}api/json"
                     job_resp = requests.get(job_api_url, auth=self.jenkins_auth)
                     if job_resp.ok:
                         data = job_resp.json()
-                        last_build = data.get("lastBuild", {}).get("number")
-                        if last_build:
+                        next_build = data.get("nextBuildNumber")
+                        if next_build:
                             self.log(
-                                f"Fallback: using last known build #{last_build} "
-                                "(may not be your run).",
+                                f"No queue info available. "
+                                f"Monitoring upcoming build #{next_build} "
+                                f"(your run may be merged with others).",
                                 "WARNING",
                             )
-                            return f"{self.jenkins_url}{last_build}/"
+                            return f"{self.jenkins_url}{next_build}/"
+                        else:
+                            self.log("Could not determine next build number.", "ERROR")
                 except Exception as e:
-                    self.log(f"Fallback failed to fetch last build: {e}", "ERROR")
+                    self.log(f"Fallback failed to fetch next build: {e}", "ERROR")
 
             else:
                 self.log(
@@ -287,6 +292,7 @@ class BuildAutomator:
                 )
                 self.log(f"Response: {response.text}", "ERROR")
                 return None
+
         except Exception as e:
             self.log(f"Error triggering Jenkins build: {e}", "ERROR")
             return None
