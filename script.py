@@ -631,27 +631,31 @@ class BuildAutomator:
             self.log("Handling Base URL popup")
             self.safe_click(driver, "//*[@id='modal-button-1']", "Base URL OK button")
 
-            # Fill Environment Owner Email
-            self.log("Filling environment details")
-            email_input = wait.until(
-                EC.presence_of_element_located(
-                    (
-                        By.XPATH,
-                        "//label[normalize-space()='Environment Owner Email']/following::input[@formcontrolname='ownerEmailCtrl'][1]",
-                    )
-                )
-            )
-            email_input.clear()
-            email_input.send_keys(self.config["tem"]["environment_email"])
+            # NOTE: I commented these steps out because TEM updated and these are no longer present
+            #       But of course, I left them here for backward compatability
+            #       Especially in case these fields might reappear in the future
+            #
+            # # Fill Environment Owner Email
+            # self.log("Filling environment details")
+            # email_input = wait.until(
+            #     EC.presence_of_element_located(
+            #         (
+            #             By.XPATH,
+            #             "//label[normalize-space()='Environment Owner Email']/following::input[@formcontrolname='ownerEmailCtrl'][1]",
+            #         )
+            #     )
+            # )
+            # email_input.clear()
+            # email_input.send_keys(self.config["tem"]["environment_email"])
 
-            # Usage type dropdown
-            self.log("Selecting usage type")
-            self.safe_click(
-                driver,
-                "//label[normalize-space()='Usage Type']/following::div[contains(@class,'dropdown') and @role='combobox'][1]",
-                "Usage Type dropdown",
-            )
-            self.safe_click(driver, "//li[normalize-space()='QA']", "Usage Type option")
+            # # Usage type dropdown
+            # self.log("Selecting usage type")
+            # self.safe_click(
+            #     driver,
+            #     "//label[normalize-space()='Usage Type']/following::div[contains(@class,'dropdown') and @role='combobox'][1]",
+            #     "Usage Type dropdown",
+            # )
+            # self.safe_click(driver, "//li[normalize-space()='QA']", "Usage Type option")
 
             # Submit
             self.log("Submitting execution job")
